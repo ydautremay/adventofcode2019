@@ -2,7 +2,9 @@ package dyve.aoc.day.day10;
 
 import dyve.aoc.input.InputReader;
 
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Part2 {
 
@@ -15,15 +17,6 @@ public class Part2 {
     }
 
     protected void execute(List<String> input) {
-
-        //(OI, OM) = (OI, u) + (u, OM)
-        //= -(u, OI) + (u, OM)
-        //= -pi/2 + arg(z)
-        //= arg(z) - pi/2
-        //
-        //= 2arctan(y/(x + sqrt(x² + y²))) - pi/2 sauf si y = 0 et x < 0, alors pi/2
-
-
         asteroids = new Matrix<>(input.get(0).length(), input.size());
         for(int i = 0; i < input.size(); i++){
             String line = input.get(i);
@@ -34,49 +27,37 @@ public class Part2 {
             }
         }
 
-        for(Asteroid a : asteroids){
-            for(Asteroid other : asteroids){
-                if(a == null || other == null || a == other){
+        List<Asteroid> destroyed = new ArrayList<>();
+
+        Asteroid best = asteroids.get(11, 13);
+        best.findVisible(asteroids);
+        while(best.visible.size() > 0) {
+            SortedMap<Double, Asteroid> bySlope = new TreeMap<>();
+            for(Asteroid a : best.visible){
+                Vector v = new Vector(best.p, a.p);
+                if(v.x < 0){
                     continue;
                 }
-                if(a.hidden.contains(other)){
-                    other.hidden.add(a);
-                    continue;
-                }
-                if(a.visible.contains(other)){
-                    other.visible.add(a);
-                    continue;
-                }
-                if(other.hidden.contains(a)){
-                    a.hidden.add(other);
-                    continue;
-                }
-                if(other.visible.contains(a)){
-                    a.visible.add(other);
-                    continue;
-                }
-                Vector v = new Vector(other.p.x - a.p.x, other.p.y - a.p.y);
-                v = v.reduce();
-                Point current = a.p;
-                Asteroid first = null;
-                current = current.add(v);
-                while(current.x >= 0 && current.y >= 0 && current.x < asteroids.width && current.y < asteroids.height){
-                    Asteroid asteroid = asteroids.get(current.x, current.y);
-                    if(first == null){
-                        if(asteroid != null){
-                            first = asteroid;
-                            a.visible.add(asteroid);
-                        }
-                    }else{
-                        if(asteroid != null){
-                            a.hidden.add(asteroid);
-                        }
-                    }
-                    current = current.add(v);
-                }
+                bySlope.put(v.slope(), a);
             }
+            for(Asteroid a : bySlope.values()){
+                destroyed.add(a);
+                asteroids.set(a.p.x, a.p.y, null);
+            }
+            bySlope.clear();
+            for(Asteroid a : best.visible){
+                Vector v = new Vector(best.p, a.p);
+                if(v.x >= 0){
+                    continue;
+                }
+                bySlope.put(v.slope(), a);
+            }
+            for(Asteroid a : bySlope.values()){
+                destroyed.add(a);
+                asteroids.set(a.p.x, a.p.y, null);
+            }
+            best.findVisible(asteroids);
         }
-        System.out.println(asteroids);
-        System.out.println(asteroids.stream().mapToInt(a -> a == null ? 0 : a.visible.size()).max().orElse(0));
+        System.out.println(destroyed.get(199));
     }
 }

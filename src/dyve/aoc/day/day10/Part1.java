@@ -3,7 +3,9 @@ package dyve.aoc.day.day10;
 import dyve.aoc.input.InputReader;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public class Part1 {
 
@@ -26,49 +28,16 @@ public class Part1 {
             }
         }
 
+
         for(Asteroid a : asteroids){
-            for(Asteroid other : asteroids){
-                if(a == null || other == null || a == other){
-                    continue;
-                }
-                if(a.hidden.contains(other)){
-                    other.hidden.add(a);
-                    continue;
-                }
-                if(a.visible.contains(other)){
-                    other.visible.add(a);
-                    continue;
-                }
-                if(other.hidden.contains(a)){
-                    a.hidden.add(other);
-                    continue;
-                }
-                if(other.visible.contains(a)){
-                    a.visible.add(other);
-                    continue;
-                }
-                Vector v = new Vector(other.p.x - a.p.x, other.p.y - a.p.y);
-                v = v.reduce();
-                Point current = a.p;
-                Asteroid first = null;
-                current = current.add(v);
-                while(current.x >= 0 && current.y >= 0 && current.x < asteroids.width && current.y < asteroids.height){
-                    Asteroid asteroid = asteroids.get(current.x, current.y);
-                    if(first == null){
-                        if(asteroid != null){
-                            first = asteroid;
-                            a.visible.add(asteroid);
-                        }
-                    }else{
-                        if(asteroid != null){
-                            a.hidden.add(asteroid);
-                        }
-                    }
-                    current = current.add(v);
-                }
-            }
+            if(a == null)
+                continue;
+            a.findVisible(asteroids);
         }
         System.out.println(asteroids);
-        System.out.println(asteroids.stream().mapToInt(a -> a == null ? 0 : a.visible.size()).max().orElse(0));
+        Asteroid best = asteroids.stream().filter(Objects::nonNull).max(Comparator.comparing(a -> a.visible.size())).orElse(null);
+        assert best != null;
+        System.out.println(best.p);
+        System.out.println(best.visible.size());
     }
 }

@@ -40,7 +40,7 @@ public class Matrix<T> implements Iterable<T> {
         StringBuilder output = new StringBuilder();
         for (List<T> line : inner) {
             for (T element : line) {
-                output.append(element == null ? " .. " : element);
+                output.append(element == null ? "." : "#");
             }
             output.append("\n");
         }
