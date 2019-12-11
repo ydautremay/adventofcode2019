@@ -20,7 +20,20 @@ public class Param {
         };
     }
 
+    public int readPosition(Program p){
+        return switch (mode){
+            case 0, 1 -> (int) value;
+            case 2 -> (int) value + p.relativeBase;
+            default -> Integer.MAX_VALUE;
+        };
+    }
+
     public String toString(){
-        return mode == 0 ? "#" + value : "" + value;
+        return switch (mode){
+            case 0 -> "#" + value;
+            case 1 -> "" + value;
+            case 2 -> "R" + value;
+            default -> "POUET";
+        };
     }
 }

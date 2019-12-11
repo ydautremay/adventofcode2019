@@ -15,7 +15,7 @@ public class Program {
 
     String output = "";
 
-    long[] program = new long[1024];
+    long[] program = new long[1024*1024];
 
     public Program(List<String> program, int input){
         for(int i = 0; i < program.size(); i++){
