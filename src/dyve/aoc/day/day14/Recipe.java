@@ -21,7 +21,7 @@ public class Recipe {
     }
 
     public Optional<Ingredient> cook(long quantity, Stock stock){
-        long nbRecipe = BigDecimal.valueOf(quantity).divide(BigDecimal.valueOf(nbProducts), 0, RoundingMode.CEILING).intValue();
+        long nbRecipe = BigDecimal.valueOf(quantity).divide(BigDecimal.valueOf(nbProducts), 0, RoundingMode.CEILING).longValueExact();
         for (Ingredient ingredient : ingredients.values()){
             long ingStock = stock.getOrDefault(ingredient.component.name, 0L);
             long ingRequired = ingredient.quantity * nbRecipe;
@@ -44,6 +44,14 @@ public class Recipe {
         }
         stock.compute(product.name, (name, qty) -> qty == null ? nbRecipe * nbProducts : qty + nbRecipe * nbProducts);
         return Optional.empty();
+    }
+
+    public void recycle(long quantity, Stock stock){
+        long nbRecycle = BigDecimal.valueOf(quantity).divide(BigDecimal.valueOf(nbProducts), 0, RoundingMode.DOWN).longValueExact();
+        for (Ingredient ingredient : ingredients.values()) {
+            stock.computeIfPresent(ingredient.component.name, (name, qty) -> qty + nbRecycle * ingredient.quantity);
+        }
+        stock.compute(product.name, (name, qty) -> qty == null ? nbRecycle * nbProducts : qty - nbRecycle * nbProducts);
     }
 
     @Override

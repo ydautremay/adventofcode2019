@@ -16,8 +16,8 @@ public class Part2 {
 
     public static void main(String[] args) throws Exception {
         Part2 instance = new Part2();
-        //instance.execute(InputReader.readInput("14"));
-        instance.execute(InputReader.readInput("14test"));
+        instance.execute(InputReader.readInput("14"));
+        //instance.execute(InputReader.readInput("14test"));
         //instance.execute(List.of("10 ORE => 3 A", "1 ORE => 7 B", "7 A, 1 B => 1 FUEL"));
     }
 
@@ -32,6 +32,7 @@ public class Part2 {
             Stock copy = new Stock(stock);
             cook(fuel, fuelQuantity, copy);
             if(!enoughOre){
+                recycle(stock);
                 if(fuelQuantity == 1){
                     fuelQuantity = 0;
                 }else{
@@ -54,6 +55,16 @@ public class Part2 {
                 cook(ingredient.component, ingredient.quantity, stock);
             }
         });
+    }
+
+    private void recycle(Stock stock){
+        Stock copy = new Stock();
+        while(!copy.equals(stock)) {
+            copy = new Stock(stock);
+            System.out.println("RECYCLING : " + stock);
+            stock.keySet().stream().filter(k -> !k.equals("ORE") && !k.equals("FUEL")).forEach(k -> components.get(k).recipe.recycle(stock.get(k), stock));
+            System.out.println("RECYCLED : " + stock);
+        }
     }
 
     private void readInput(List<String> input){
