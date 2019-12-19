@@ -16,7 +16,7 @@ public class Opcode {
         this.params = params;
     }
 
-    public void compute(Program p, Supplier<Integer> input, Consumer<Long> output){
+    public void compute(Program p, Supplier<Integer> input, Consumer<Integer> output){
         switch (operationId){
             case 1 -> {
                 p.write(params[2].readPosition(p), params[0].readParam(p) + params[1].readParam(p));
@@ -36,7 +36,7 @@ public class Opcode {
                 }
             }
             case 4 -> {
-                output.accept(params[0].readParam(p));
+                output.accept((int)params[0].readParam(p));
 //                System.out.println("Output " + params[0].readParam(p));
             }
             case 5 -> {

@@ -13,11 +13,11 @@ public class Program {
 
     Supplier<Integer> input;
 
-    Consumer<Long> output;
+    Consumer<Integer> output;
 
     long[] program = new long[1024*1024];
 
-    public Program(List<String> program, Supplier<Integer> input, Consumer<Long> output){
+    public Program(List<String> program, Supplier<Integer> input, Consumer<Integer> output){
         for(int i = 0; i < program.size(); i++){
             this.program[i] = Long.parseLong(program.get(i));
         }
