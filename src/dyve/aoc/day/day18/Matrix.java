@@ -42,4 +42,15 @@ public class Matrix {
     public boolean contains(String value){
         return inner.values().stream().flatMap(map -> map.values().stream()).anyMatch(s -> s.equals(value));
     }
+
+    public Optional<Position> find(String s){
+        for(Integer i : inner.keySet()){
+            for(Integer j : inner.get(i).keySet()){
+                if(inner.get(i).get(j).equals(s)){
+                    return Optional.of(new Position(j, i));
+                }
+            }
+        }
+        return Optional.empty();
+    }
 }
